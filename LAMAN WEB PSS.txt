@@ -1,0 +1,81 @@
+import csv
+import os
+from datetime import datetime
+
+# Menyemak jika fail CSV wujud, jika tidak, buat fail baru dengan header
+if not os.path.exists('perpustakaan.csv'):
+    with open('perpustakaan.csv', mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Nombor Buku", "Judul", "Penulis", "Tahun Terbit", "Penerbit", "ISBN", "Tarikh Penerimaan", "Nombor Rak"])
+
+# Fungsi untuk menambah buku baru ke dalam fail CSV
+def tambah_buku():
+    nombor_buku = input("Masukkan nombor buku (contoh: B001): ")
+    judul = input("Masukkan judul buku: ")
+    penulis = input("Masukkan nama penulis: ")
+    tahun_terbit = input("Masukkan tahun terbit: ")
+    penerbit = input("Masukkan penerbit: ")
+    isbn = input("Masukkan ISBN: ")
+    
+    # Masukkan tarikh penerimaan (format: YYYY-MM-DD)
+    tarikh_penerimaan = input("Masukkan tarikh penerimaan buku (YYYY-MM-DD): ")
+    try:
+        datetime.strptime(tarikh_penerimaan, "%Y-%m-%d")  # Validasi tarikh
+    except ValueError:
+        print("Tarikh tidak sah. Format yang betul adalah YYYY-MM-DD.")
+        return
+    
+    nombor_rak = input("Masukkan nombor rak buku: ")
+    
+    with open('perpustakaan.csv', mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([nombor_buku, judul, penulis, tahun_terbit, penerbit, isbn, tarikh_penerimaan, nombor_rak])
+        print("Buku telah ditambah.")
+
+# Fungsi untuk mencari buku berdasarkan judul atau penulis
+def cari_buku():
+    search_term = input("Masukkan kata kunci untuk carian (judul/penulis): ")
+    found = False
+    with open('perpustakaan.csv', mode='r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Melangkau header
+        for row in reader:
+            if search_term.lower() in row[1].lower() or search_term.lower() in row[2].lower():
+                print(f"Nombor Buku: {row[0]}, Judul: {row[1]}, Penulis: {row[2]}, Tahun Terbit: {row[3]}, Penerbit: {row[4]}, ISBN: {row[5]}, Tarikh Penerimaan: {row[6]}, Nombor Rak: {row[7]}")
+                found = True
+    if not found:
+        print("Tiada buku ditemui.")
+
+# Fungsi untuk melihat semua buku dalam fail CSV
+def lihat_buku():
+    with open('perpustakaan.csv', mode='r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Melangkau header
+        for row in reader:
+            print(f"Nombor Buku: {row[0]}, Judul: {row[1]}, Penulis: {row[2]}, Tahun Terbit: {row[3]}, Penerbit: {row[4]}, ISBN: {row[5]}, Tarikh Penerimaan: {row[6]}, Nombor Rak: {row[7]}")
+
+# Fungsi utama yang menawarkan pilihan kepada pengguna
+def main():
+    while True:
+        print("\nSistem Perpustakaan:")
+        print("1. Tambah Buku")
+        print("2. Cari Buku")
+        print("3. Lihat Semua Buku")
+        print("4. Keluar")
+        
+        pilihan = input("Pilih nombor operasi (1/2/3/4): ")
+        
+        if pilihan == '1':
+            tambah_buku()
+        elif pilihan == '2':
+            cari_buku()
+        elif pilihan == '3':
+            lihat_buku()
+        elif pilihan == '4':
+            print("Keluar dari sistem.")
+            break
+        else:
+            print("Pilihan tidak sah. Sila cuba lagi.")
+
+if __name__ == "__main__":
+    main()
